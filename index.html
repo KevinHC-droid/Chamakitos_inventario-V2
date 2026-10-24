@@ -144,7 +144,7 @@ document.addEventListener('click',async e=>{
  else if(a==='edit')edit(id);
  else if(a==='new')newItem();
  else if(a==='menu')menu();
- else if(a==='export')exportSheet();
+ else if(a==='export')exportXlsx('dl');
  else if(a==='xshare'){close();exportXlsx('share')}
  else if(a==='xdl'){close();exportXlsx('dl')}
  else if(a==='import')$('#file').click();
@@ -186,7 +186,7 @@ document.addEventListener('input',e=>{const t=e.target;
  else if(t.dataset.k){S.c[t.dataset.k]=t.value;save()}
 });
 let ready=null;
-function dlReady(){try{const u=URL.createObjectURL(ready.blob),a=document.createElement('a');a.href=u;a.download=ready.fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Descargado. Súbelo a tu carpeta de Drive')}catch(e){toast('No se pudo guardar el archivo')}}
+function dlReady(){try{const u=URL.createObjectURL(ready.blob),a=document.createElement('a');a.href=u;a.download=ready.fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Excel guardado en Descargas. Ábrelo desde Archivos para subirlo a Drive')}catch(e){toast('No se pudo guardar el archivo')}}
 function shareReady(){const f=()=>{close();dlReady()};
  try{navigator.share({files:[ready.file],title:ready.fn}).then(()=>close()).catch(err=>{if(err&&err.name==='AbortError')return;f()})}catch(err){f()}}
 let incoming=null;
