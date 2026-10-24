@@ -4,8 +4,8 @@
 <title>Inventario de tienda</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#000000">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
@@ -172,6 +172,8 @@ document.addEventListener('click',async e=>{
  else if(a==='sendshare'){const t=$('#sh').value;if(navigator.share){try{await navigator.share({text:t})}catch(x){}}else toast((await copyTxt(t))?'Copiado. Pégalo en WhatsApp':'Selecciona el texto y cópialo')}
  else if(a==='copyshare')toast((await copyTxt($('#sh').value))?'Copiado. Pégalo en WhatsApp':'Selecciona el texto y cópialo');
  else if(a==='loadsheet')loadSheet();
+ else if(a==='doshare')shareReady();
+ else if(a==='dodl'){close();dlReady()}
  else if(a==='cancelin'){incoming=null;close()}
  else if(a==='okin'){try{if(incoming.type==='x')importXlsx(incoming.buf);else if(applyCode(incoming.text)){save();render();close();toast('Cierre cargado. Nuevo día listo')}else throw 0}catch(x){toast('No reconozco ese archivo')}incoming=null}
  else if(a==='okload'){if(!$('#ld').value.trim()){toast('Pega primero el mensaje');return}
@@ -183,6 +185,10 @@ document.addEventListener('input',e=>{const t=e.target;
  else if(t.dataset.h){S[t.dataset.h]=t.value;save()}
  else if(t.dataset.k){S.c[t.dataset.k]=t.value;save()}
 });
+let ready=null;
+function dlReady(){try{const u=URL.createObjectURL(ready.blob),a=document.createElement('a');a.href=u;a.download=ready.fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Descargado. Súbelo a tu carpeta de Drive')}catch(e){toast('No se pudo guardar el archivo')}}
+function shareReady(){const f=()=>{close();dlReady()};
+ try{navigator.share({files:[ready.file],title:ready.fn}).then(()=>close()).catch(err=>{if(err&&err.name==='AbortError')return;f()})}catch(err){f()}}
 let incoming=null;
 async function checkShared(){
  if(!/[?&]shared=1/.test(location.search))return;
@@ -221,10 +227,10 @@ async function exportXlsx(mode){
  const out=await wb.xlsx.writeBuffer(),p=n=>String(n).padStart(2,'0');
  const fn=`${safe(S.tienda,'Inventario')}_${new Date().getFullYear()}-${p(S.mes)}-${p(S.dia)}.xlsx`,blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  try{
-  const file=new File([blob],fn,{type:blob.type});
-  if(mode==='share'&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:fn});toast('Elige Drive u otra app para guardarlo');return}
-  const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Descargado. Súbelo a tu carpeta de Drive')
- }catch(e){if(!e||e.name!=='AbortError')toast('No se pudo guardar el archivo')}
+  const file=new File([blob],fn,{type:blob.type});ready={fn,blob,file};
+  if(mode==='share'&&navigator.canShare&&navigator.canShare({files:[file]}))open(`<h2>Excel listo</h2><div class="hint">${esc(fn)}</div><div class="row"><button class="pri" data-act="doshare">Compartir / Drive</button><button class="sec" data-act="dodl">Descargar</button></div>`);
+  else dlReady()
+ }catch(e){toast('No se pudo generar el archivo')}
 }
 const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
 function importXlsx(buf){

@@ -1,31 +1,25 @@
-# Inventario de tienda (PWA)
+# Inventario de tienda (PWA) - archivos sin carpetas
 
-## IMPORTANTE: para que NO se vea la barra del navegador
-La app solo se ve como app nativa si Android verifica que eres dueno de la pagina web (Digital Asset Links).
-Eso exige que el archivo `/.well-known/assetlinks.json` este en la RAIZ del dominio. Por eso:
+Todos los archivos de este zip van sueltos en la raiz del repositorio (nada de carpetas):
+index.html, manifest.webmanifest, sw.js, icon-192.png, icon-512.png, icon-maskable-512.png, _config.yml
+(assetlinks-plantilla.json es solo un ejemplo, no hace falta subirlo).
 
-- Crea el repositorio con el nombre exacto `TU-USUARIO.github.io` (asi la app queda en `https://TU-USUARIO.github.io/`, sin subcarpeta).
-- Si usas un repositorio normal (`.../inventario/`) la verificacion falla y Android muestra la barra de direcciones.
+## 1. Subir a GitHub
+1. Repositorio publico llamado exactamente `TU-USUARIO.github.io`.
+2. Add file > Upload files: arrastra los archivos del zip (descomprimido) y haz Commit.
+3. Settings > Pages > Deploy from a branch > main / (root) > Save.
 
-## 1. Subir a GitHub Pages
-1. Crea el repositorio `TU-USUARIO.github.io` (publico).
-2. Sube TODO el contenido de esta carpeta a la raiz: `index.html`, `manifest.webmanifest`, `sw.js`, `icons/`, el archivo `.nojekyll` y la carpeta `.well-known/`.
-   (Si el navegador no deja subir carpetas/archivos que empiezan con punto: en GitHub usa Add file > Create new file y escribe `.well-known/assetlinks.json` y `.nojekyll`.)
-3. Settings > Pages > Deploy from a branch > `main` / `(root)` > Save.
-4. Abre `https://TU-USUARIO.github.io/` en Chrome del movil y comprueba que carga.
+## 2. Crear assetlinks.json (esto es lo que quita la barra del navegador)
+Debe estar en `.well-known/assetlinks.json`. Esa carpeta se crea escribiendo, no subiendo:
+1. En el repositorio: Add file > Create new file.
+2. En el cuadro del nombre escribe `.well-known/assetlinks.json` (al escribir la "/" GitHub crea la carpeta solo).
+3. Pega dentro el contenido del `assetlinks.json` que te da PWABuilder (viene en el zip del APK). Si no, usa la plantilla cambiando `package_name` y la huella SHA-256 por las de tu APK.
+4. Commit changes.
+5. Comprueba que abre en el navegador: https://TU-USUARIO.github.io/.well-known/assetlinks.json
+6. Desinstala la app, instala el APK de nuevo y abrela.
 
-## 2. Generar el APK con PWABuilder
-1. En https://www.pwabuilder.com pega `https://TU-USUARIO.github.io/`.
-2. Package for stores > Android > Generate. Pon un Package ID propio (ej. `com.tunombre.inventario`).
-3. Descarga el zip: trae el `.apk`, el keystore (GUARDALO, sin el no podras actualizar) y un `assetlinks.json` / la huella SHA-256.
-4. Abre `.well-known/assetlinks.json` de este proyecto y reemplaza `package_name` por tu Package ID y la huella por la que te dio PWABuilder (o copia el contenido de su `assetlinks.json`). Subelo a GitHub.
-5. Instala el APK. Al abrirlo debe verse a pantalla completa, sin barra de direcciones. (Si aun sale la barra, espera unos minutos tras subir assetlinks.json y reinstala; comprueba que `https://TU-USUARIO.github.io/.well-known/assetlinks.json` abre en el navegador.)
-
-## Importar el Excel desde WhatsApp
-Con la app instalada: en WhatsApp abre el Excel recibido > Compartir (o mantenlo pulsado > Compartir) > elige "Inventario". La app abre una ventana para confirmar la carga.
-Tambien funciona compartiendo a la app el mensaje de "Compartir cierre". Si tu telefono no la lista, usa Mas > Importar Excel y elige el archivo desde Descargas/Documentos.
+El archivo `_config.yml` hace que GitHub publique la carpeta `.well-known` (por defecto la ignora).
 
 ## Notas
-- La primera vez necesita internet (carga las librerias de Excel); despues funciona sin conexion.
-- Cada telefono guarda su propio inventario. Entre telefonos: Mas > Compartir cierre / Cargar cierre, o el Excel.
-- Si cambias `index.html`, cambia `inventario-v2` por `inventario-v3` en `sw.js` para que los telefonos se actualicen.
+- Si cambias index.html, cambia `inventario-v4` por `inventario-v5` en sw.js.
+- Importar desde WhatsApp: Compartir el Excel > elegir "Inventario".
