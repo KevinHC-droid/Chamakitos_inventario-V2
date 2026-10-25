@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Inventario de tienda</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#000000">
@@ -43,7 +43,9 @@ main{padding:0 12px 110px}
 .btns{display:flex;gap:8px;margin-top:9px}
 button{font:inherit;cursor:pointer}
 .b{flex:1;padding:11px;border-radius:10px;border:1.5px solid;background:transparent;font-weight:600}
-.b.in{color:var(--in);border-color:var(--in)}.b.out{color:var(--out);border-color:var(--out)}
+.b.in{color:var(--in);border-color:var(--in)}.b.out{color:var(--out);border-color:var(--out)}.b.ven{color:var(--ac);border-color:var(--ac)}
+.btns .b{padding:11px 4px}
+.kb .bar{display:none}
 .pri{background:var(--ac);color:var(--on);border:0;border-radius:12px;padding:13px;font-weight:600}
 .sec{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:12px;padding:13px;font-weight:600}
 .bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--bd);z-index:6}
@@ -89,7 +91,7 @@ textarea{font-size:13px;resize:none}
 <script>
 const KEY='inventario_tienda_v2';
 let uid=1;const nid=p=>p+Date.now().toString(36)+(uid++);
-const mk=(n,i,p,cat)=>({id:nid('a'),cat,n,i,e:0,s:0,f:null,p});
+const mk=(n,i,p,cat)=>({id:nid('a'),cat,n,i,e:0,s:0,v:0,f:null,p});
 const EC={transf:'',efec:'',usd:'',t1:'',t2:'',t3:'',t4:''};
 function wk(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y)/864e5+1)/7)}
 function today(){const d=new Date();S.semana=wk(d);S.dia=d.getDate();S.mes=d.getMonth()+1}
@@ -101,13 +103,13 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=v=>{const n=parseFloat(String(v).replace(',','.'));return isNaN(n)?0:n};
 const fmt=n=>Number(n).toLocaleString('es');
-function calc(it){const ex=it.i+it.e-it.s;const fin=it.f==null?ex:it.f;return{ex,fin,ven:ex-fin,imp:(ex-fin)*it.p}}
+function calc(it){const ex=it.i+it.e-it.s,v=it.v||0;const fin=it.f==null?ex-v:it.f,ven=it.f==null?v:ex-it.f;return{ex,fin,ven,imp:ven*it.p}}
 function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2800)}
 function render(){
  if(!S.cats.some(c=>c.id===S.cur))S.cur=S.cats[0].id;
  const q=$('#q').value.trim().toLowerCase();let tot=0,gen=0,h='';
  S.items.forEach(it=>{const c=calc(it);gen+=c.imp;if(it.cat!==S.cur)return;tot+=c.imp;if(q&&!it.n.toLowerCase().includes(q))return;
- h+=`<div class="it"><div class="top"><div><button class="nm" data-act="edit" data-id="${it.id}">${esc(it.n)}</button><div class="sub">Inicio ${it.i} · Entrada ${it.e} · Salida ${it.s} · Precio ${fmt(it.p)}${c.ven?` · Venta ${c.ven} (${fmt(c.imp)})`:''}</div></div><div class="ex">${c.fin}<small>existencia</small></div></div><div class="btns"><button class="b in" data-act="ent" data-id="${it.id}">+ Entrada</button><button class="b out" data-act="sal" data-id="${it.id}">− Salida</button></div></div>`});
+ h+=`<div class="it"><div class="top"><div><button class="nm" data-act="edit" data-id="${it.id}">${esc(it.n)}</button><div class="sub">Inicio ${it.i} · Entrada ${it.e} · Salida ${it.s} · Precio ${fmt(it.p)}${c.ven?` · Venta ${c.ven} (${fmt(c.imp)})`:''}</div></div><div class="ex">${c.fin}<small>existencia</small></div></div><div class="btns"><button class="b in" data-act="ent" data-id="${it.id}">+ Entrada</button><button class="b out" data-act="sal" data-id="${it.id}">− Salida</button><button class="b ven" data-act="ven" data-id="${it.id}">Venta</button></div></div>`});
  $('#list').innerHTML=h||'<div class="empty">Esta hoja no tiene artículos.<br>Toca «+ Artículo» para añadir el primero.</div>';
  $('#tabs').innerHTML=S.cats.map(c=>`<button class="tab${c.id===S.cur?' on':''}" data-act="tab" data-id="${c.id}">${esc(c.n)}${c.id===S.cur?' ✎':''}</button>`).join('')+'<button class="tab" data-act="newcat">+ Hoja</button>';
  $('#tot').textContent=fmt(tot);$('#gen').textContent=fmt(gen);
@@ -118,16 +120,18 @@ function open(h){pn.innerHTML=h;ov.classList.add('on');const i=pn.querySelector(
 function close(){ov.classList.remove('on')}
 const find=id=>S.items.find(x=>x.id===id);
 let cur=null,armed='';
-function mov(kind,id){const it=find(id);cur=id;const e=kind==='ent';
- open(`<h2>${e?'Entrada':'Salida'}: ${esc(it.n)}</h2><div class="hint">Existencia actual: ${calc(it).ex}</div><div class="step"><button data-act="step" data-d="-1">−</button><input id="qty" inputmode="numeric" value="1" data-focus="1"><button data-act="step" data-d="1">+</button></div><button class="pri" style="width:100%" data-act="okmov" data-kind="${kind}">Confirmar ${e?'entrada':'salida'}</button>`)}
+function mov(kind,id){const it=find(id);cur=id;const T={ent:'Entrada',sal:'Salida',ven:'Venta'};
+ open(`<h2>${T[kind]}: ${esc(it.n)}</h2><div class="hint">Existencia actual: ${calc(it).fin}${kind==='ven'?` · Precio ${fmt(it.p)} (importe = cantidad × precio)`:''}</div><div class="step"><button data-act="step" data-d="-1">−</button><input id="qty" inputmode="numeric" value="1" data-focus="1"><button data-act="step" data-d="1">+</button></div><button class="pri" style="width:100%" data-act="okmov" data-kind="${kind}">Confirmar ${T[kind].toLowerCase()}</button>`)}
 function edit(id){const it=find(id);cur=id;armed='';
- open(`<h2>Editar artículo</h2><div class="f"><span>Mercancía</span><input id="e_n" value="${esc(it.n)}"></div><div class="row"><div class="f"><span>Inicio</span><input id="e_i" inputmode="numeric" value="${it.i}"></div><div class="f"><span>Precio</span><input id="e_p" inputmode="decimal" value="${it.p}"></div></div><div class="f"><span>Conteo final (vacío = automático)</span><input id="e_f" inputmode="numeric" value="${it.f==null?'':it.f}"></div><div class="row"><button class="dng" data-act="del">Quitar del inventario</button><button class="pri" data-act="okedit">Guardar</button></div>`)}
+ open(`<h2>Editar artículo</h2><div class="f"><span>Mercancía</span><input id="e_n" value="${esc(it.n)}"></div><div class="row"><div class="f"><span>Inicio</span><input id="e_i" inputmode="numeric" value="${it.i}"></div><div class="f"><span>Precio</span><input id="e_p" inputmode="decimal" value="${it.p}"></div></div><div class="row"><div class="f"><span>Entradas</span><input id="e_e" inputmode="numeric" value="${it.e}"></div><div class="f"><span>Salidas</span><input id="e_s" inputmode="numeric" value="${it.s}"></div><div class="f"><span>Ventas</span><input id="e_v" inputmode="numeric" value="${it.v||0}"></div></div><div class="f"><span>Conteo final (vacío = automático)</span><input id="e_f" inputmode="numeric" value="${it.f==null?'':it.f}"></div><div class="row"><button class="dng" data-act="del">Quitar del inventario</button><button class="pri" data-act="okedit">Guardar</button></div>`)}
 function newItem(){const c=S.cats.find(x=>x.id===S.cur);open(`<h2>Añadir artículo a «${esc(c.n)}»</h2><div class="f"><span>Mercancía</span><input id="n_n" placeholder="Ej: Saya 4-12" data-focus="1"></div><div class="row"><div class="f"><span>Cantidad inicial</span><input id="n_i" inputmode="numeric" value="0"></div><div class="f"><span>Precio</span><input id="n_p" inputmode="decimal" value="0"></div></div><button class="pri" style="width:100%" data-act="oknew">Añadir al inventario</button>`)}
 function catSheet(isNew){armed='';const c=S.cats.find(x=>x.id===S.cur);
  open(isNew?`<h2>Nueva hoja</h2><div class="f"><span>Nombre de la categoría</span><input id="c_n" placeholder="Ej: Ropa de niña" data-focus="1"></div><button class="pri" style="width:100%" data-act="okcat" data-new="1">Crear hoja</button>`
  :`<h2>Editar hoja</h2><div class="f"><span>Nombre de la categoría</span><input id="c_n" value="${esc(c.n)}" data-focus="1"></div><div class="hint">Al quitar la hoja se borran también sus artículos.</div><div class="row"><button class="dng" data-act="delcat">Quitar hoja</button><button class="pri" data-act="okcat">Guardar</button></div>`)}
+function clearMenu(){armed='';const c=S.cats.find(x=>x.id===S.cur),n=S.items.filter(x=>x.cat===S.cur).length;
+ open(`<h2>Limpiar hoja</h2><div class="hint">¿Qué quieres borrar?</div><button class="dng" style="width:100%;margin-bottom:8px" data-act="clr1">Solo «${esc(c.n)}» (${n} artículos)</button><button class="dng" style="width:100%" data-act="clrall">Todas las hojas (${S.items.length} artículos)</button><div class="hint">Las hojas se conservan, solo se borran los artículos.</div>`)}
 function menu(){armed='';const c=S.c;
- open(`<h2>Cierre del día</h2><div class="row"><div class="f"><span>Transferencias</span><input data-k="transf" value="${esc(c.transf||'')}"></div><div class="f"><span>Efectivo</span><input data-k="efec" value="${esc(c.efec||'')}"></div></div><div class="f"><span>USD</span><input data-k="usd" value="${esc(c.usd||'')}"></div><div class="row"><div class="f"><span>Trabajador 1</span><input data-k="t1" value="${esc(c.t1||'')}"></div><div class="f"><span>Trabajador 2</span><input data-k="t2" value="${esc(c.t2||'')}"></div></div><div class="row"><div class="f"><span>Trabajador 3</span><input data-k="t3" value="${esc(c.t3||'')}"></div><div class="f"><span>Trabajador 4</span><input data-k="t4" value="${esc(c.t4||'')}"></div></div><div class="row"><button class="sec" data-act="share">Compartir cierre</button><button class="sec" data-act="loadsheet">Cargar cierre</button></div><div class="row"><button class="sec" data-act="import">Importar Excel</button><button class="dng" data-act="closeday">Cerrar día</button></div><div class="hint">«Cerrar día» deja el conteo final como inicio del día siguiente y pone entradas y salidas en 0.</div>`)}
+ open(`<h2>Cierre del día</h2><div class="row"><div class="f"><span>Transferencias</span><input data-k="transf" value="${esc(c.transf||'')}"></div><div class="f"><span>Efectivo</span><input data-k="efec" value="${esc(c.efec||'')}"></div></div><div class="f"><span>USD</span><input data-k="usd" value="${esc(c.usd||'')}"></div><div class="row"><div class="f"><span>Trabajador 1</span><input data-k="t1" value="${esc(c.t1||'')}"></div><div class="f"><span>Trabajador 2</span><input data-k="t2" value="${esc(c.t2||'')}"></div></div><div class="row"><div class="f"><span>Trabajador 3</span><input data-k="t3" value="${esc(c.t3||'')}"></div><div class="f"><span>Trabajador 4</span><input data-k="t4" value="${esc(c.t4||'')}"></div></div><div class="row"><button class="sec" data-act="share">Compartir cierre</button><button class="sec" data-act="loadsheet">Cargar cierre</button></div><div class="row"><button class="sec" data-act="import">Importar Excel</button><button class="dng" data-act="clearsheet">Limpiar hoja</button></div><div class="row"><button class="dng" data-act="closeday" style="width:100%">Empezar nuevo IPV</button></div><div class="hint">«Empezar nuevo IPV» deja el conteo final como inicio del día siguiente y pone entradas, salidas y ventas en 0. «Limpiar hoja» borra todos los artículos de la hoja que tienes abierta.</div>`)}
 function code(){const k=S.cats.map(c=>[c.n,S.items.filter(x=>x.cat===c.id).map(x=>[x.n,calc(x).fin,x.p])]);return 'INV1:'+btoa(unescape(encodeURIComponent(JSON.stringify({t:S.tienda,k}))))}
 const shareText=()=>`Cierre ${S.tienda} · ${S.dia}/${S.mes}\n(En la app: Más → Cargar cierre, y pega este mensaje)\n`+code();
 function shareSheet(){open(`<h2>Compartir cierre</h2><div class="hint">Se envía el inventario con el conteo final de hoy. Quien lo reciba lo carga y empieza el día siguiente con ese final como inicio.</div><textarea id="sh" rows="5" readonly>${esc(shareText())}</textarea><div class="row"><button class="pri" data-act="sendshare">Enviar (WhatsApp…)</button><button class="sec" data-act="copyshare">Copiar</button></div>`)}
@@ -140,7 +144,7 @@ async function copyTxt(t){try{await navigator.clipboard.writeText(t);return true
 document.addEventListener('click',async e=>{
  if(e.target===ov){close();return}
  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,id=b.dataset.id;
- if(a==='ent'||a==='sal')mov(a,id);
+ if(a==='ent'||a==='sal'||a==='ven')mov(a,id);
  else if(a==='edit')edit(id);
  else if(a==='new')newItem();
  else if(a==='menu')menu();
@@ -158,16 +162,23 @@ document.addEventListener('click',async e=>{
  else if(a==='step'){const q=$('#qty');q.value=Math.max(1,num(q.value)+num(b.dataset.d))}
  else if(a==='okmov'){const it=find(cur);let q=Math.floor(num($('#qty').value));if(q<1){toast('Pon una cantidad válida');return}
   if(b.dataset.kind==='ent'){it.e+=q;toast(`Entrada de ${q} · ${it.n}`)}
-  else{const ex=calc(it).ex;if(q>ex){toast(`Solo hay ${ex} en existencia`);return}it.s+=q;toast(`Salida de ${q} · ${it.n}`)}
+  else{const ex=calc(it).fin;if(q>ex){toast(`Solo hay ${ex} en existencia`);return}if(b.dataset.kind==='ven'){it.v=(it.v||0)+q;toast(`Venta de ${q} · ${fmt(q*it.p)}`)}else{it.s+=q;toast(`Salida de ${q} · ${it.n}`)}}
   save();render();close()}
  else if(a==='okedit'){const it=find(cur),n=$('#e_n').value.trim();if(!n){toast('Escribe el nombre');return}
-  it.n=n;it.i=Math.floor(num($('#e_i').value));it.p=num($('#e_p').value);const f=$('#e_f').value.trim();it.f=f===''?null:Math.floor(num(f));save();render();close()}
+  it.n=n;it.i=Math.floor(num($('#e_i').value));it.p=num($('#e_p').value);it.e=Math.max(0,Math.floor(num($('#e_e').value)));it.s=Math.max(0,Math.floor(num($('#e_s').value)));it.v=Math.max(0,Math.floor(num($('#e_v').value)));const f=$('#e_f').value.trim();it.f=f===''?null:Math.floor(num(f));save();render();close()}
  else if(a==='del'){if(armed!==cur){armed=cur;b.textContent='¿Seguro? Toca de nuevo';return}
   S.items=S.items.filter(x=>x.id!==cur);save();render();close();toast('Artículo quitado')}
  else if(a==='oknew'){const n=$('#n_n').value.trim();if(!n){toast('Escribe el nombre');return}
   S.items.push(mk(n,Math.floor(num($('#n_i').value)),num($('#n_p').value),S.cur));save();render();close();toast('Artículo añadido')}
+ else if(a==='clearsheet')clearMenu();
+ else if(a==='clr1'){const n=S.items.filter(x=>x.cat===S.cur).length;if(!n){toast('La hoja ya está vacía');return}
+  if(armed!=='c1'){armed='c1';b.textContent='¿Seguro? Toca de nuevo';return}
+  S.items=S.items.filter(x=>x.cat!==S.cur);save();render();close();toast('Hoja limpiada')}
+ else if(a==='clrall'){if(!S.items.length){toast('No hay artículos');return}
+  if(armed!=='ca'){armed='ca';b.textContent='¿Seguro? Toca de nuevo';return}
+  S.items=[];save();render();close();toast('Todas las hojas limpiadas')}
  else if(a==='closeday'){if(armed!=='day'){armed='day';b.textContent='¿Seguro? Toca de nuevo';return}
-  S.items.forEach(it=>{it.i=calc(it).fin;it.e=0;it.s=0;it.f=null});S.c={...EC};today();save();render();close();toast('Día cerrado')}
+  S.items.forEach(it=>{it.i=calc(it).fin;it.e=0;it.s=0;it.v=0;it.f=null});S.c={...EC};today();save();render();close();toast('Nuevo IPV listo')}
  else if(a==='share')shareSheet();
  else if(a==='sendshare'){const t=$('#sh').value;if(navigator.share){try{await navigator.share({text:t})}catch(x){}}else toast((await copyTxt(t))?'Copiado. Pégalo en WhatsApp':'Selecciona el texto y cópialo')}
  else if(a==='copyshare')toast((await copyTxt($('#sh').value))?'Copiado. Pégalo en WhatsApp':'Selecciona el texto y cópialo');
@@ -217,7 +228,7 @@ async function exportXlsx(mode){
   for(let c=1;c<=9;c++){const x=ws.getCell(3,c);x.font={bold:true};x.alignment={horizontal:'center'};x.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFE8E6DF'}}}
   box(3,1,9);let total=0;const its=S.items.filter(x=>x.cat===cat.id);
   its.forEach((it,k)=>{const r=k+4,c=calc(it);total+=c.imp;
-   ws.getRow(r).values=[it.n,it.i,it.e,it.s,{formula:`B${r}+C${r}-D${r}`,result:c.ex},c.fin,{formula:`E${r}-F${r}`,result:c.ven},it.p,{formula:`G${r}*H${r}`,result:c.imp}];box(r,1,9)});
+   ws.getRow(r).values=[it.n,it.i,it.e,it.s,{formula:`B${r}+C${r}-D${r}`,result:c.ex},{formula:`E${r}-G${r}`,result:c.fin},c.ven,it.p,{formula:`G${r}*H${r}`,result:c.imp}];box(r,1,9)});
   const last=its.length+3,tr=last+2;
   ws.getCell(tr,8).value='Total:';ws.getCell(tr,8).font={bold:true};ws.getCell(tr,9).value={formula:`SUM(I4:I${Math.max(last,4)})`,result:total};ws.getCell(tr,9).font={bold:true};box(tr,8,9);
   if(ci===0){
@@ -255,6 +266,13 @@ $('#file').addEventListener('change',ev=>{
  }catch(e){toast('No reconozco el formato del archivo')}};
  isX?r.readAsArrayBuffer(f):r.readAsText(f);ev.target.value='';
 });
+const vv=window.visualViewport;let H0=innerHeight;
+function kb(){if(!vv)return;const typing=/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||'');if(!typing)H0=Math.max(innerHeight,vv.height);
+ ov.style.bottom=Math.max(0,innerHeight-vv.height-vv.offsetTop)+'px';document.body.classList.toggle('kb',typing&&H0-vv.height>120)}
+if(vv){vv.addEventListener('resize',kb);vv.addEventListener('scroll',kb)}
+document.addEventListener('focusin',e=>{if(e.target.closest&&e.target.closest('.pn'))setTimeout(()=>{kb();e.target.scrollIntoView({block:'center',behavior:'smooth'})},300)});
+document.addEventListener('focusout',()=>setTimeout(kb,200));
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='qty'){e.preventDefault();const b=pn.querySelector('.pri');if(b)b.click()}});
 render();
 checkShared();
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
