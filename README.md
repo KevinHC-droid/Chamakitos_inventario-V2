@@ -21,5 +21,5 @@ Debe estar en `.well-known/assetlinks.json`. Esa carpeta se crea escribiendo, no
 El archivo `_config.yml` hace que GitHub publique la carpeta `.well-known` (por defecto la ignora).
 
 ## Notas
-- Si cambias index.html, cambia `inventario-v4` por `inventario-v5` en sw.js.
+- Si cambias index.html, cambia `inventario-v5` por `inventario-v12` en sw.js.
 - Importar desde WhatsApp: Compartir el Excel > elegir "Inventario".
