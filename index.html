@@ -120,8 +120,8 @@ function open(h){pn.innerHTML=h;ov.classList.add('on');const i=pn.querySelector(
 function close(){ov.classList.remove('on')}
 const find=id=>S.items.find(x=>x.id===id);
 let cur=null,armed='';
-function mov(kind,id){const it=find(id);cur=id;const T={ent:'Entrada',sal:'Salida',ven:'Venta'};
- open(`<h2>${T[kind]}: ${esc(it.n)}</h2><div class="hint">Existencia actual: ${calc(it).fin}${kind==='ven'?` · Precio ${fmt(it.p)} (importe = cantidad × precio)`:''}</div><div class="step"><button data-act="step" data-d="-1">−</button><input id="qty" inputmode="numeric" value="1" data-focus="1"><button data-act="step" data-d="1">+</button></div><button class="pri" style="width:100%" data-act="okmov" data-kind="${kind}">Confirmar ${T[kind].toLowerCase()}</button>`)}
+function mov(kind,id){const it=find(id);cur=id;const L={ent:['Entrada','entrada','e','Entradas registradas'],sal:['Salida','salida','s','Salidas registradas'],ven:['Venta','venta','v','Ventas registradas']}[kind],tot=it[L[2]]||0;
+ open(`<h2>${L[0]}: ${esc(it.n)}</h2><div class="hint">Existencia actual: ${calc(it).fin} · ${L[3]}: ${tot}${kind==='ven'?' · Precio '+fmt(it.p):''}<br>Cambia el número para corregir o aumentar.</div><div class="step"><button data-act="step" data-d="-1">−</button><input id="qty" inputmode="numeric" value="${tot}" data-focus="1"><button data-act="step" data-d="1">+</button></div><button class="pri" style="width:100%" data-act="okmov" data-kind="${kind}">Confirmar ${L[1]}</button>`)}
 function edit(id){const it=find(id);cur=id;armed='';
  open(`<h2>Editar artículo</h2><div class="f"><span>Mercancía</span><input id="e_n" value="${esc(it.n)}"></div><div class="row"><div class="f"><span>Inicio</span><input id="e_i" inputmode="numeric" value="${it.i}"></div><div class="f"><span>Precio</span><input id="e_p" inputmode="decimal" value="${it.p}"></div></div><div class="row"><div class="f"><span>Entradas</span><input id="e_e" inputmode="numeric" value="${it.e}"></div><div class="f"><span>Salidas</span><input id="e_s" inputmode="numeric" value="${it.s}"></div><div class="f"><span>Ventas</span><input id="e_v" inputmode="numeric" value="${it.v||0}"></div></div><div class="f"><span>Conteo final (vacío = automático)</span><input id="e_f" inputmode="numeric" value="${it.f==null?'':it.f}"></div><div class="row"><button class="dng" data-act="del">Quitar del inventario</button><button class="pri" data-act="okedit">Guardar</button></div>`)}
 function newItem(){const c=S.cats.find(x=>x.id===S.cur);open(`<h2>Añadir artículo a «${esc(c.n)}»</h2><div class="f"><span>Mercancía</span><input id="n_n" placeholder="Ej: Saya 4-12" data-focus="1"></div><div class="row"><div class="f"><span>Cantidad inicial</span><input id="n_i" inputmode="numeric" value="0"></div><div class="f"><span>Precio</span><input id="n_p" inputmode="decimal" value="0"></div></div><button class="pri" style="width:100%" data-act="oknew">Añadir al inventario</button>`)}
@@ -172,11 +172,12 @@ document.addEventListener('click',async e=>{
  else if(a==='delcat'){if(S.cats.length<2){toast('Debe quedar al menos una hoja');return}
   if(armed!=='cat'){armed='cat';b.textContent='¿Seguro? Toca de nuevo';return}
   S.items=S.items.filter(x=>x.cat!==S.cur);S.cats=S.cats.filter(x=>x.id!==S.cur);S.cur=S.cats[0].id;save();render();close();toast('Hoja quitada')}
- else if(a==='step'){const q=$('#qty');q.value=Math.max(1,num(q.value)+num(b.dataset.d))}
- else if(a==='okmov'){const it=find(cur);let q=Math.floor(num($('#qty').value));if(q<1){toast('Pon una cantidad válida');return}
-  if(b.dataset.kind==='ent'){it.e+=q;toast(`Entrada de ${q} · ${it.n}`)}
-  else{const ex=calc(it).fin;if(q>ex){toast(`Solo hay ${ex} en existencia`);return}if(b.dataset.kind==='ven'){it.v=(it.v||0)+q;toast(`Venta de ${q} · ${fmt(q*it.p)}`)}else{it.s+=q;toast(`Salida de ${q} · ${it.n}`)}}
-  save();render();close()}
+ else if(a==='step'){const q=$('#qty');q.value=Math.max(0,num(q.value)+num(b.dataset.d))}
+ else if(a==='okmov'){const it=find(cur),k=b.dataset.kind,key={ent:'e',sal:'s',ven:'v'}[k],q=Math.floor(num($('#qty').value));if(q<0){toast('Pon una cantidad válida');return}
+  const old=it[key]||0,d=q-old;if(d===0){close();return}
+  const bak={e:it.e,s:it.s,v:it.v,f:it.f};it[key]=q;if(it.f!=null)it.f+=(k==='ent'?d:-d);
+  if(calc(it).fin<0){Object.assign(it,bak);toast('No alcanza la existencia');return}
+  toast(k==='ven'?`Ventas: ${q} · importe ${fmt(q*it.p)}`:`${k==='ent'?'Entradas':'Salidas'}: ${q}`);save();render();close()}
  else if(a==='okedit'){const it=find(cur),n=$('#e_n').value.trim();if(!n){toast('Escribe el nombre');return}
   it.n=n;it.i=Math.floor(num($('#e_i').value));it.p=num($('#e_p').value);it.e=Math.max(0,Math.floor(num($('#e_e').value)));it.s=Math.max(0,Math.floor(num($('#e_s').value)));it.v=Math.max(0,Math.floor(num($('#e_v').value)));const f=$('#e_f').value.trim();it.f=f===''?null:Math.floor(num(f));save();render();close()}
  else if(a==='del'){if(armed!==cur){armed=cur;b.textContent='¿Seguro? Toca de nuevo';return}
@@ -269,7 +270,7 @@ function importXlsx(buf,mode){
   const cat={id:nid('c'),n:sn};let cnt=0;
   for(let k=hi+1;k<a.length;k++){const row=a[k],n=String(row[cn]).trim();if(!n)continue;if(/^(total|transfer)/.test(norm(n)))break;
    const fin=cF>=0&&row[cF]!==''?num(row[cF]):null,ini=cI>=0?num(row[cI]):0;const pr=cP>=0?num(row[cP]):0;let it;
-   if(mode==='asis'){it=mk(n,Math.floor(ini),pr,cat.id);it.e=Math.floor(cE>=0?num(row[cE]):0);it.s=Math.floor(cS>=0?num(row[cS]):0);it.f=fin==null?null:Math.floor(fin)}
+   if(mode==='asis'){it=mk(n,Math.floor(ini),pr,cat.id);it.e=Math.floor(cE>=0?num(row[cE]):0);it.s=Math.floor(cS>=0?num(row[cS]):0);if(fin!=null){const ex=it.i+it.e-it.s,f2=Math.floor(fin);if(f2<=ex)it.v=ex-f2;else it.f=f2}}
    else it=mk(n,Math.floor(fin!=null?fin:ini),pr,cat.id);
    items.push(it);cnt++}
   cats.push(cat)});
