@@ -64,10 +64,14 @@ button{font:inherit;cursor:pointer}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:9px 14px;border-radius:20px;font-size:14px;z-index:30;display:none;max-width:90%;text-align:center}
 .empty{text-align:center;color:var(--mut);padding:30px 0}
 textarea{font-size:13px;resize:none}
+.gasto-item{display:flex;gap:6px;margin-bottom:6px;align-items:center}
+.gasto-item input[type="text"]{flex:2}
+.gasto-item input[type="number"]{flex:1}
+.btn-del-gasto{background:transparent;color:var(--out);border:1px solid var(--out);border-radius:8px;padding:6px 10px;font-weight:bold}
 </style></head>
 <body>
 <header>
-<div class="brand"><img class="logo" alt="Logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAB4AHgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD41ooooAKK0PDlvp134h0611i8ey02a6iju7lF3NDEXAdwO5C5P4V7j+1J8AoPhzaWPivwddXWqeErxUV5ZZFle3kYfKSygBo3GCrY68dxkA+fqK+gZ/BPhe8/Ykg8aWmj26eILDWzHeX658x0MpTaefu4ePjtjPc18/UAbvgXwl4h8b+JLfw94Y02XUNRnyVjQgBVHV2Y8Ko7k8V6Xe/s4eNFtJ/7G17wf4i1K2QvPpOk6us14gHX5CBkj0Bz6Zrg/A3j3WfB2h+JdM0ZYI38QWS2U90QRNDEH3MI2BGNw+U+3uKtfBHTvFV78UfDz+ELS8l1OK/ikjeBDiNQ43MzDgJtzuzxjNAHGSxvFK0UqMkiMVZWGCpHUEdjTK9H/aautIvPj34xudCaJ7F9RbDRY2tIFUSkY4OZA5z3rzigAooooAKKKKACiiigAopT1pKAO++Dfwx1H4oahqWl6NrWkWWqWtsJrazvZjG96cnKR8dQBk+mR2yR9Afs/wDxEHhGz1L4F/HeyOnaa0Dx2j6oNsccbZ3Qs3TyzyyODgEYB+7j5n8GeD/HHiDdqXhHw9rmo/Y5VBuNOtpHMMnUfMn3W7iu4+NGs/GnWfB+jW/xM0DVYrLSZGS31K/0poZXZxwjzEDdwvA6nGTk80AWtT+JukeGPhp47+Dvh+1Ot6FqGstNpmryTFSsSuhyU2/NnylwcjqTivGo0eWQJGpd2PCqMk/gK/SP4X/s8/B3T/C2k3g8L2muTz2kUzXt+Wn88sgbdtJ2AHPQCvQGl+G3giLl/CnhxEHrb2uMflQB+ZPh/wCF/wARde2nSPA/iG7Q9JFsJAn/AH0QB+tfS+u+EvjjoH7Mvgnwr4O0fWrG9zfjXreyaNZwjSkxAkHdyGb7p9jXuur/ALRfwW0wss/jywnZe1rHLcZ+hRSP1rnJf2tfg0s3lrqerSL/AM9F0yTb+uD+lAHwZrngDxzoZb+2PB2v2AXq0+nyqv57cVzTKVYqw2kdQeCK/TnQ/wBo74L6uF8nxzZWzn+G8ilt8fi6gfrXTpcfC/xmg2zeEPEKuOm62uc5/M0Afk/ikr9O/Ff7PnwY1ewuDeeC9N04bCzXNkWtTEMctlSF468givzbn0We71q+tPD1veatbQTyLDLBbs7PGGIVyFBxkAGgDIoqS4hlt5mhnieKVDhkdSrA+4PNR0AFFFFACnrSUppKAPuD/gm1n/hD/F3p/aEH/oo10/8AwUI82T4J6dawRvJLP4gt0REBLMfLlwAO5zXN/wDBNxceCfFj+upQj8ov/r12v7Zn7zSPh7bf89vG1gv6P/jQB8hXnw++Ptn4NmvL7SvF9roGm2xkeO4u3jjghQZOImcEADsFrzrwpomoeKvFWneH9PaI3+p3SW0LTvtUu5wNzc4Ge9frrqNlbahp9zYXkSy21zE8MyHoyMCGH4gmvy+OhXXwx/aOs9Gu2YHQ/EVuVkbjfCJkZH/4EhB/GgDe8f8A7NXxK8E+EdQ8Ua2NFGnWCB5zDfbmwWCjA2jJywr6L+CH7NPwm1r4Y+G/EWs6Tfane6lpsF1MZb+REDugLBVQrgZPfNejfthxNN+zd4xVRki3hb8BcRk/pVn9k68+3fs7eDJs52WBh/79yOn/ALLQB+fXx98AzfDX4pat4XJd7SNxPYyN/wAtLd+UPuRyp91NepfAn9mH/hZ3w5tPGEfjUaU0800Rthp3m7DG5XO7zB1xnp3r1z/goX4AbVvBunePbCDdc6K/2e9Kjk20h+Vj7LJj/v4a3f8AgnzfR3PwJuLUOC9nrNxGy9wGSNx/6EaAPl6TwV40h+OM3wQ0nxrq93by3i2dxIk8sULRGMPKzRbyMKpbg5zj3r9DfAPg/wAP+BvDFp4d8N2EdnY2yAfKBvlbHLu3VnPUk18+/B/RI7j9uL4m6tPHltPtl8nP8LTLCM/98hh+NdB8QP2gNc+HHxVbw9428ESQ+GXy9vrNi8ku+Mg7G2lQM5wrLnIPIyMZAOs/aU+E+kfEv4fajEunW/8AwkNtA02mXYjAlEqjIjLdSr42kHjkHqK/MN1ZWKspVgcEEcg+lfop8Cvi58UfiT44mF38PYdD8HRB3N7cpMk2MHy0UsQrsTjO1cAZ9s/Dnxy0yLR/jJ4w02ABYYNauljUdApkYgfkaAOMooooAU0lKetJQB90/wDBN4D/AIV34nPc6ug/8grXWftdOJde+Eum/wAU/jO1kA9kIH/s9cV/wTpv7K0+H/idLu8t4CdVQgSyquf3K+prf/aq1awuvih8F4rK/tbhl8TB3EUyuVHmQDJweO9AHt3xR8Z6d8PvAupeLtVguLizsAhkjtwDI2+RUGMkDq2etfK/7ePhG31Gx8OfGTw4VubOWKGC8mi6NG3z2830OSmfdBXsP7Y+saHJ+z74r01tX0/7Y8UPlW/2lPMdhcRnAXOTwD2ri/2GPE1h45+DuqfD7xHb2+pJo8nlfZ7lBIktpKSyKQeoVw49htoA9T/aI/4m37OHi2WMbxLoT3A9wFD5/SuY/YUumn/Z10qNskW15dxLn080t/7NXp/xN0+K6+F3iXS4o1SOXRbqBEUYCgwsAAPyryX9ghsfs8WpbgLqN1yeB94UAdX4b+IWg/ETxv4/+FGsadEj6WWtmiZ9wvbV0CyNjsQzYIHZlNYv7KXwy174WR+MtB1RN+nSausul3PmKftEPl4DEA5U42gg45BxxzXyd8Y/GOp+Af2u/EPivw5cIbiz1MSY3ZjmRok8yNsdVYEg+n1Ffdfwy+JvhPx74OsvEmlanbQpOuJreaZVlt5QPmjcE9Qe/QjBHBoA8t8CahbaZ+3D8QNIlYJJq2jWk8Of42jjiyB74LH8DXoX7SdvLdfBjXbaCN5JZWtUVFGSSbqEdK+UP2tPF1x4N/au0rxj4fmikubKwtJ8q4KS4MishI7Mnyn2NfYPwp+JfhH4l+HotV8N6lDMxUG4s3YC4tm7q6dePUcHqDQB2f8AjX5N/GrURq3xe8X6ipyk+tXbIfVfNYD9AK/RX9oj4taL8L/A19dvf2za/NCyaZY7wZJJSMByvUIudxJ44x1Ir8vp5ZJpnmldpJHYs7McliTkk/jQAyiiigBT1pKU9aSgD64/YU+Hfgbxv4S8STeK/DOn6vcWt/EkUlwpLIjR5wMEcZBrzn4VfDDSvEH7V194Ev7Yvomn6lf+fEkjIfJhLhAGUhhzsGQc17R/wTXkz4d8Zxf3by0b80kH9KX9mzTfM/bO+K1/In/Hq94in0Ml0v8ARTQB2eu/sofBS3srnUJ7fWLC3t4mmmkj1JiEVQSx+cN0ANfN/wCyD488MeBvjhqV3eaodI8NX9ncQRvevkqodXh3kDlsLjOByTX1b+2l4mk8N/AHWY7dyt1q7x6ZFg8kSHLj/v2rj8a6/wCFvw88L+FfBOjWEHhvSYbuGwgS5mWzjEksojUOzNjJJOetAGdd/Gf4Q6jp1xbD4i+Gws0TxkPeqnVSO+PWvnn9ij4XeCvHPgHUdS8UQXurNYatJbRWj38gtAvlxsG8pSASSxznIPHFfXtzoGhXMZWfRtNmXHR7WNh+oryL9muK1sPH/wAXtIsbaG2trbxMHjhiQIiB4ugUcAfL2oA6fWPgP8INU0xrCf4f6HDGykCS1t/IlX3Dphs/jXzq37MPhDRPjjaeGfEE2sXXhnX7aZ9FuYbhY5IbmIb3t5TsIb92GZTxnHsajv8Axh4y1H9vlrPwze3i26ahDp91bB28prSKMefvXpgfvGB7HBHNe2ftoaxd+Hvgu2u6XevY6tZanavp9zHjfHKSyMVz38tpB9CaAMB/2OfhIy/LceJk91v0/rHT9O/ZA+F1jcC4g1Lxasq9HXUUQj8VjBrvPgDr2ra/+z94f17Vr+a71O406SSW5kILu4ZwGPvwK+ZPgP8AAnV/i54Mj8da58T9et5Lu5mjaGMNJJlHKkmRpOp69KAOy+Pn7N3w48K/CbxL4r05dbl1WxtfOiludQaQbt6j5hjngmviE9TX3xJ+x/4cngaG8+IPjO4RhhlaaPafqCpr4g8dadpukeNNa0rR7ie50+yv5re2mnxvkRHKhjt4ycZ4oAxaKKKAFPWkpT1pKAPs7/gmpJm18dQ/7dk36TCvZPgt4F1Lw98Y/ir4m1Czkhh1jU4PsMjDiWPYZGZfUbpMfVT6V4f/AME1JMaj44iz1ism/wDHphX2j0oA+W/22Lltc+IPwr8ARAt9v1hbidc9jJHEvH0MlelftO6p8VdP8I6fD8JtPubjVbi8IuZoII5TDAEPaTgEsV5x2NePa7fL42/4KE6PYhvMtPDUHl+weKF5SfwkkA/4DXsX7QPxw0T4PHRotU0i+1SXVBK0aWzovlrHtBJ3epcY+hoA579kp/jFjxMnxah1nzHa3ksJL8pjGHEioFOB/AcYFXvgahtvj78arQjGdR06cf8AA4GP9a0v2fPjhpPxhn1uPTNEu9L/ALKWAt9omRzJ5m/oF6Y2frTfAkX2T9p34lpjH2/StIugPXassZP/AI7QB6NZ+GfDtl4hu/EVpoWnW+sXi7Lm+jtlWeVeOGcDJHA/IV8P/t6/E268Q+OU+H9vaz2un6BNvmaUFTc3DIMMB/cVWIU99zHpirHxT8dal8Nv24L7WTqF0umfbLT7bB5zeW9vJbxq+Vzg4BLD3Arov+CiHgcO2g/EbToQ8br/AGffyJyD1aBzj1G9c/7ooA9p/ZrYp+yn4dcHBXSLg/8Aj8tcr+xrZXeqfsoSabY3LWt3dtqMEE4YqYnfKqwI5GCQcium/Z3Oz9krQ2540S5P6y1gfsTW1zefsux2ljeGyup5r+OG4AyYXZiFfHfBIP4UAeO3f7MXxxtbW61K78e2INtE82U1W7d22qTx8nU4r5Wdmdi7sWZjkknJJNfa0P7KXxEu52m1X41X29iQzxrcSMwPXJaUV8d+LtJ/sDxXq+hCf7R/Z19Paebt2+Z5cjJuxzjOM4oAy6KKKAFPWkpTSUAev/sz/GhPg5qOt3b+Hm1kapDDHsF35Hl7GY5ztbOd3tXu9t+2/pjMBc/Dy8jHcx6ojH8jGK+KaKAPX/gf8YofBHxh1b4heIdJudauNSiuAwinCMkk0iuXywIPAIxx1qD9pn4vD4v+LtP1a30mXSrOwsvs0UEkwkYsXLM+QABnKjH+zXk9FAHsP7MXxlg+Dus6ze3OiTavFqVtHF5cVwIijIxIJJBzwxFdtP8AtXXlv8WdT8c6X4PhEd9pMGnfZLm9J2iJ3ffuVRnJcjGK+aKKAOy+Mvj26+JfxAvfF97p0Gnz3ccSNBC7Mo8tAg5PPIFe36h+0T4b1b9llPh/4h0281XxG9mdPOAFijWMjyLhnPVgAhwASSpyRmvl6igDorHx342sNKTSbHxfr9rp6IY0tYdQlSJUOcqEDYAOTx713fwx/aG+IPw78IQ+F/Dn9kLYQzSSqZ7MySEucnJ3Dj8K8iooA+h4/wBsL4ur95fDkn+9p7f0evB/EOqXOua/qOtXixLc6hdS3UwiXageRizbR2GSeKoUUAFFFFAC4Pofyow390/lRRQAYb+6fyow390/lRRQAYb+6fyow390/lRRQAYb+6fyow390/lRRQAYb+6fyow390/lRRQAYb+6fyow390/lRRQAYb+6fyow390/lRRQAYb+6fyooooA//Z"><input id="shop" data-h="tienda" placeholder="Nombre de la tienda"></div>
+<div class="brand"><img class="logo" alt="Logo" src="icon-192.png"></div>
 <div class="dates">
 <label>Semana<input data-h="semana" inputmode="numeric"></label>
 <label>Día<input data-h="dia" inputmode="numeric"></label>
@@ -92,11 +96,11 @@ textarea{font-size:13px;resize:none}
 const KEY='inventario_tienda_v2';
 let uid=1;const nid=p=>p+Date.now().toString(36)+(uid++);
 const mk=(n,i,p,cat)=>({id:nid('a'),cat,n,i,e:0,s:0,v:0,f:null,p});
-const EC={transf:'',efec:'',usd:'',t1:'',t2:'',t3:'',t4:''};
+const EC={transf:'',efec:'',usd:'',cobro_trabajadores:'',gastos:[]};
 function wk(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y)/864e5+1)/7)}
 function today(){const d=new Date();S.semana=wk(d);S.dia=d.getDate();S.mes=d.getMonth()+1}
 function fresh(){const c={id:nid('c'),n:'Hoja 1'};const o={tienda:'INNOVARTE',cats:[c],cur:c.id,items:[],c:{...EC}};const d=new Date();o.semana=wk(d);o.dia=d.getDate();o.mes=d.getMonth()+1;return o}
-function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.items&&o.cats&&o.cats.length)return o}}catch(e){}return fresh()}
+function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.items&&o.cats&&o.cats.length){if(!o.c.gastos)o.c.gastos=[];return o}}}catch(e){}return fresh()}
 let S=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const $=s=>document.querySelector(s);
@@ -130,8 +134,13 @@ function catSheet(isNew){armed='';const c=S.cats.find(x=>x.id===S.cur);
  :`<h2>Editar hoja</h2><div class="f"><span>Nombre de la categoría</span><input id="c_n" value="${esc(c.n)}" data-focus="1"></div><div class="hint">Al quitar la hoja se borran también sus artículos.</div><div class="row"><button class="dng" data-act="delcat">Quitar hoja</button><button class="pri" data-act="okcat">Guardar</button></div>`)}
 function clearMenu(){armed='';const c=S.cats.find(x=>x.id===S.cur),n=S.items.filter(x=>x.cat===S.cur).length;
  open(`<h2>Limpiar hoja</h2><div class="hint">¿Qué quieres borrar?</div><button class="dng" style="width:100%;margin-bottom:8px" data-act="clr1">Solo «${esc(c.n)}» (${n} artículos)</button><button class="dng" style="width:100%" data-act="clrall">Todas las hojas (${S.items.length} artículos)</button><div class="hint">Las hojas se conservan, solo se borran los artículos.</div>`)}
+function renderGastosHTML(){
+ const g=S.c.gastos||[];
+ if(!g.length)return '<div class="hint">No hay gastos extras registrados.</div>';
+ return g.map((item,idx)=>`<div class="gasto-item"><input type="text" placeholder="Descripción" value="${esc(item.desc)}" data-gidx="${idx}" data-gk="desc"><input type="number" placeholder="Monto" value="${item.monto||''}" data-gidx="${idx}" data-gk="monto"><button class="btn-del-gasto" data-act="delgasto" data-idx="${idx}">✕</button></div>`).join('')
+}
 function menu(){armed='';const c=S.c;
- open(`<h2>Cierre del día</h2><div class="row"><div class="f"><span>Transferencias</span><input data-k="transf" value="${esc(c.transf||'')}"></div><div class="f"><span>Efectivo</span><input data-k="efec" value="${esc(c.efec||'')}"></div></div><div class="f"><span>USD</span><input data-k="usd" value="${esc(c.usd||'')}"></div><div class="row"><div class="f"><span>Trabajador 1</span><input data-k="t1" value="${esc(c.t1||'')}"></div><div class="f"><span>Trabajador 2</span><input data-k="t2" value="${esc(c.t2||'')}"></div></div><div class="row"><div class="f"><span>Trabajador 3</span><input data-k="t3" value="${esc(c.t3||'')}"></div><div class="f"><span>Trabajador 4</span><input data-k="t4" value="${esc(c.t4||'')}"></div></div><div class="row"><button class="sec" data-act="share">Compartir IPV</button><button class="sec" data-act="loadsheet">Cargar IPV</button></div><div class="row"><button class="sec" data-act="import">Importar Excel</button><button class="dng" data-act="clearsheet">Limpiar hoja</button></div><div class="row"><button class="dng" data-act="closeday" style="width:100%">Empezar nuevo IPV</button></div><div class="hint">«Empezar nuevo IPV» deja el conteo final como inicio del día siguiente y pone entradas, salidas y ventas en 0. «Limpiar hoja» borra todos los artículos de la hoja que tienes abierta.</div>`)}
+ open(`<h2>Cierre del día</h2><div class="row"><div class="f"><span>Transferencias</span><input data-k="transf" value="${esc(c.transf||'')}"></div><div class="f"><span>Efectivo</span><input data-k="efec" value="${esc(c.efec||'')}"></div></div><div class="row"><div class="f"><span>USD</span><input data-k="usd" value="${esc(c.usd||'')}"></div><div class="f"><span>Cobro trabajadores</span><input data-k="cobro_trabajadores" value="${esc(c.cobro_trabajadores||'')}"></div></div><div class="f"><span>Gastos Extras (Solo reflejo)</span><div id="gastos-list">${renderGastosHTML()}</div><button class="sec" style="width:100%;margin-top:6px" data-act="addgasto">+ Añadir Gasto</button></div><div class="row"><button class="sec" data-act="share">Compartir IPV</button><button class="sec" data-act="loadsheet">Cargar IPV</button></div><div class="row"><button class="sec" data-act="import">Importar Excel</button><button class="dng" data-act="clearsheet">Limpiar hoja</button></div><div class="row"><button class="dng" data-act="closeday" style="width:100%">Empezar nuevo IPV</button></div><div class="hint">«Empezar nuevo IPV» deja el conteo final como inicio del día siguiente y pone entradas, salidas y ventas en 0. «Limpiar hoja» borra todos los artículos de la hoja que tienes abierta.</div>`)}
 async function zip(s){const cs=new CompressionStream('deflate-raw'),w=cs.writable.getWriter();w.write(new TextEncoder().encode(s)).catch(()=>{});w.close().catch(()=>{});return new Uint8Array(await new Response(cs.readable).arrayBuffer())}
 async function unzip(u){const ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter();w.write(u).catch(()=>{});w.close().catch(()=>{});return new TextDecoder().decode(await new Response(ds.readable).arrayBuffer())}
 const b64=u=>{let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
@@ -139,7 +148,7 @@ const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function code(){const k=S.cats.map(c=>[c.n,S.items.filter(x=>x.cat===c.id).map(x=>[x.n,x.i,x.e,x.s,x.v||0,x.f,x.p])]),j=JSON.stringify({t:S.tienda,d:[S.semana,S.dia,S.mes],c:S.c,k});
  if(window.CompressionStream)return 'INV3:'+b64(await zip(j))+'.';return 'INV2:'+btoa(unescape(encodeURIComponent(j)))+'.'}
 const shareText=async()=>`IPV ${S.tienda} · ${S.dia}/${S.mes}\n(En la app: Más → Cargar IPV, y pega este mensaje)\n`+await code();
-async function shareSheet(){const tx=await shareText();open(`<h2>Compartir IPV</h2><div class="hint">Se envía el IPV completo (inventario, entradas, salidas, ventas, fecha y trabajadores). Quien lo reciba puede cargar el IPV o cargarlo y empezar el nuevo día con el conteo final como inicio.</div><textarea id="sh" rows="5" readonly>${esc(tx)}</textarea><div class="row"><button class="pri" data-act="sendshare">Enviar (WhatsApp…)</button><button class="sec" data-act="copyshare">Copiar</button></div>`)}
+async function shareSheet(){const tx=await shareText();open(`<h2>Compartir IPV</h2><div class="hint">Se envía el IPV completo (inventario, entradas, salidas, ventas, fecha y detalles de cobro/gastos). Quien lo reciba puede cargar el IPV o cargarlo y empezar el nuevo día con el conteo final como inicio.</div><textarea id="sh" rows="5" readonly>${esc(tx)}</textarea><div class="row"><button class="pri" data-act="sendshare">Enviar (WhatsApp…)</button><button class="sec" data-act="copyshare">Copiar</button></div>`)}
 function loadSheet(){armed='';open(`<h2>Cargar IPV</h2><div class="hint">Pega aquí el mensaje que te enviaron. Esto reemplaza el inventario de este teléfono.</div><textarea id="ld" rows="5" placeholder="Pega el mensaje…" data-focus="1"></textarea><div class="row"><button class="sec" data-act="okload" data-mode="asis">Cargar IPV</button><button class="pri" data-act="okload" data-mode="next">Cargar IPV y empezar nuevo día</button></div><div class="row"><button class="sec" data-act="import">Desde archivo…</button></div><div class="hint">«Cargar IPV» carga todo como lo dejó quien lo envió (entradas, salidas, ventas y fecha). «Cargar IPV y empezar nuevo día» usa el conteo final como inicio y deja entradas, salidas y ventas en 0.</div>`)}
 function showIncoming(name){armed='';open(`<h2>Archivo recibido</h2><div class="hint">${esc(name)}<br>Esto reemplaza el inventario de este teléfono. «Cargar IPV» lo carga como viene. «Cargar IPV y empezar nuevo día» pone el conteo final como inicio y deja entradas, salidas y ventas en 0.</div><div class="row"><button class="sec" data-act="okin" data-mode="asis">Cargar IPV</button><button class="pri" data-act="okin" data-mode="next">Cargar IPV y empezar nuevo día</button></div><div class="row"><button class="sec" data-act="cancelin">Cancelar</button></div>`)}
 async function applyCode(t,mode){const raw=String(t),mm=raw.match(/INV([123]):/);if(!mm)return false;
@@ -200,6 +209,8 @@ document.addEventListener('click',async e=>{
  else if(a==='doshare')shareReady();
  else if(a==='dodl'){close();dlReady()}
  else if(a==='cancelin'){incoming=null;close()}
+ else if(a==='addgasto'){if(!S.c.gastos)S.c.gastos=[];S.c.gastos.push({desc:'',monto:''});save();$('#gastos-list').innerHTML=renderGastosHTML()}
+ else if(a==='delgasto'){const idx=parseInt(b.dataset.idx,10);if(!isNaN(idx)&&S.c.gastos){S.c.gastos.splice(idx,1);save();$('#gastos-list').innerHTML=renderGastosHTML()}}
  else if(a==='okin'){const md=b.dataset.mode;if(armed!=='in'+md){armed='in'+md;b.textContent='¿Reemplazar todo? Toca de nuevo';return}
   let ok=false;try{if(incoming.type==='x'){importXlsx(incoming.buf,md);ok=true}else if(await applyCode(incoming.text,md)){save();render();close();toast(md==='next'?'IPV cargado. Nuevo día listo':'IPV cargado');ok=true}}catch(x){}
   if(ok)incoming=null;else toast('No reconozco ese archivo')}
@@ -211,6 +222,7 @@ document.addEventListener('input',e=>{const t=e.target;
  if(t.id==='q')render();
  else if(t.dataset.h){S[t.dataset.h]=t.value;save()}
  else if(t.dataset.k){S.c[t.dataset.k]=t.value;save()}
+ else if(t.dataset.gk){const idx=parseInt(t.dataset.gidx,10);if(!isNaN(idx)&&S.c.gastos&&S.c.gastos[idx]){S.c.gastos[idx][t.dataset.gk]=t.value;save()}}
 });
 let ready=null;
 function dlReady(){try{const u=URL.createObjectURL(ready.blob),a=document.createElement('a');a.href=u;a.download=ready.fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Excel guardado en Descargas. Ábrelo desde Archivos para subirlo a Drive')}catch(e){toast('No se pudo guardar el archivo')}}
@@ -237,7 +249,19 @@ async function exportXlsx(mode){
  S.cats.forEach((cat,ci)=>{
   let nm=safe(cat.n,'Hoja').slice(0,28)||'Hoja',k=2,b0=nm;while(used.includes(nm.toLowerCase()))nm=b0+' '+(k++);used.push(nm.toLowerCase());
   const ws=wb.addWorksheet(nm),box=(r,a,b)=>{for(let c=a;c<=b;c++)ws.getCell(r,c).border=BD};
-  [24,9,9,9,11,9,9,9,11].forEach((w,i)=>ws.getColumn(i+1).width=w);
+  
+  // Configuracion de pagina: carta, centrado horizontalmente, margenes a 0
+  ws.pageSetup={
+   paperSize:9, // Letter / Carta
+   orientation:'portrait',
+   fitToPage:true,
+   fitToWidth:1,
+   fitToHeight:0,
+   horizontalCentered:true,
+   margins:{left:0,right:0,top:0,bottom:0,header:0,footer:0}
+  };
+
+  [20,8,8,8,10,8,8,8,10].forEach((w,i)=>ws.getColumn(i+1).width=w);
   ws.mergeCells('A1:I1');const A1=ws.getCell('A1');A1.value=S.tienda||'';A1.font={bold:true,size:14};A1.alignment={horizontal:'center'};
   ws.getRow(2).values=['Semana:',S.semana,'Día:',S.dia,'Mes:',S.mes];
   ws.getRow(3).values=['Mercancía','Inicio','Entrada','Salida','Existencia','Final','Venta','Precio','Importe'];
@@ -249,7 +273,24 @@ async function exportXlsx(mode){
   ws.getCell(tr,8).value='Total:';ws.getCell(tr,8).font={bold:true};ws.getCell(tr,9).value={formula:`SUM(I4:I${Math.max(last,4)})`,result:total};ws.getCell(tr,9).font={bold:true};box(tr,8,9);
   if(ci===0){
    if(S.cats.length>1){ws.getCell(tr+1,8).value='General:';ws.getCell(tr+1,8).font={bold:true};ws.getCell(tr+1,9).value=grand;ws.getCell(tr+1,9).font={bold:true};box(tr+1,8,9)}
-   [['Transferencias:',S.c.transf],['Efectivo:',S.c.efec],['USD:',S.c.usd],['Trabajador 1:',S.c.t1],['Trabajador 2:',S.c.t2],['Trabajador 3:',S.c.t3],['Trabajador 4:',S.c.t4]].forEach((p,k)=>{const r=tr+k;ws.getCell(r,1).value=p[0];ws.getCell(r,1).font={bold:true};ws.mergeCells(r,2,r,4);ws.getCell(r,2).value=p[1]||'';ws.getCell(r,2).alignment={horizontal:'left'};box(r,1,4)})}
+   
+   let infoRows=[
+    ['Transferencias:',S.c.transf],
+    ['Efectivo:',S.c.efec],
+    ['USD:',S.c.usd],
+    ['Cobro trabajadores:',S.c.cobro_trabajadores]
+   ];
+   
+   if(S.c.gastos && S.c.gastos.length){
+    S.c.gastos.forEach(g=>{
+     if(g.desc || g.monto){
+      infoRows.push([`Gasto (${g.desc||'Extra'}):`,g.monto||'0']);
+     }
+    });
+   }
+
+   infoRows.forEach((p,k)=>{const r=tr+k;ws.getCell(r,1).value=p[0];ws.getCell(r,1).font={bold:true};ws.mergeCells(r,2,r,4);ws.getCell(r,2).value=p[1]||'';ws.getCell(r,2).alignment={horizontal:'left'};box(r,1,4)});
+  }
  });
  const out=await wb.xlsx.writeBuffer(),p=n=>String(n).padStart(2,'0');
  const fn=`${safe(S.tienda,'Inventario')}_${new Date().getFullYear()}-${p(S.mes)}-${p(S.dia)}.xlsx`,blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
